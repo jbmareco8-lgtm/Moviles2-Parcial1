@@ -74,9 +74,25 @@ public class MainViewModel : BaseViewModel
 
             StatusMessage = $"Se cargaron {CarMakes.Count} marcas.";
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex) when (ex.StatusCode is null)
         {
-            StatusMessage = ex.Message;
+            StatusMessage =
+                "No se pudo conectar con el servidor. Verificá tu conexión a Internet.";
+        }
+        catch (HttpRequestException ex)
+        {
+            StatusMessage =
+                $"Error HTTP {(int?)ex.StatusCode}: {ex.StatusCode}.";
+        }
+        catch (TaskCanceledException)
+        {
+            StatusMessage =
+                "La solicitud tardó demasiado tiempo. Intentá nuevamente.";
+        }
+        catch (Exception)
+        {
+            StatusMessage =
+                "Ocurrió un error inesperado al cargar las marcas.";
         }
         finally
         {
@@ -100,4 +116,4 @@ public class MainViewModel : BaseViewModel
             parameters
         );
     }
-}
+} 

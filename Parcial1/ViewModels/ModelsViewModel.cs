@@ -45,13 +45,16 @@ public class ModelsViewModel : BaseViewModel, IQueryAttributable
             query.TryGetValue("makeName", out var makeNameValue))
         {
             int makeId = Convert.ToInt32(makeIdValue);
-            string makeName = makeNameValue.ToString() ?? string.Empty;
+            string makeName =
+                makeNameValue.ToString() ?? string.Empty;
 
             _ = LoadModelsAsync(makeId, makeName);
         }
     }
 
-    private async Task LoadModelsAsync(int makeId, string makeName)
+    private async Task LoadModelsAsync(
+        int makeId,
+        string makeName)
     {
         MakeName = makeName;
         StatusMessage = string.Empty;
@@ -61,22 +64,40 @@ public class ModelsViewModel : BaseViewModel, IQueryAttributable
 
         try
         {
-            var models = await _api.GetModelsForMakeAsync(makeId);
+            var models =
+                await _api.GetModelsForMakeAsync(makeId);
 
             foreach (var model in models)
             {
                 Models.Add(model);
             }
 
-            StatusMessage = $"Se cargaron {Models.Count} modelos.";
+            StatusMessage =
+                $"Se cargaron {Models.Count} modelos.";
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex) when (ex.StatusCode is null)
         {
-            StatusMessage = ex.Message;
+            StatusMessage =
+                "No se pudo conectar con el servidor. Verificá tu conexión a Internet.";
+        }
+        catch (HttpRequestException ex)
+        {
+            StatusMessage =
+                $"Error HTTP {(int?)ex.StatusCode}: {ex.StatusCode}.";
+        }
+        catch (TaskCanceledException)
+        {
+            StatusMessage =
+                "La solicitud tardó demasiado tiempo. Intentá nuevamente.";
+        }
+        catch (Exception)
+        {
+            StatusMessage =
+                "Ocurrió un error inesperado al cargar los modelos.";
         }
         finally
         {
             IsBusy = false;
         }
     }
-}
+} 
