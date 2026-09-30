@@ -32,4 +32,26 @@ public class ApiService : IApiService
 
         return data?.Results ?? new List<CarMake>();
     }
+
+    public async Task<IReadOnlyList<CarModel>> GetModelsForMakeAsync(
+    int makeId,
+    CancellationToken ct = default)
+    {
+        var url = $"GetModelsForMakeId/{makeId}?format=json";
+
+        var response = await _httpClient.GetAsync(url, ct);
+
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync(ct);
+
+        var data = JsonSerializer.Deserialize<CarModelResponse>(
+            json,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+        return data?.Results ?? new List<CarModel>();
+    }
 }

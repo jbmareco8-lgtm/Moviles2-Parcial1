@@ -1,39 +1,31 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="Parcial1.MainPage"
-    x:Name="MainPageRoot"
-    Title="Marcas de autos">
+    x:Class="Parcial1.ModelsPage"
+    Title="Modelos">
 
     <Grid
         Padding="20"
-        RowDefinitions="Auto,Auto,Auto,*"
+        RowDefinitions="Auto,Auto,*"
         RowSpacing="15">
 
-        <VerticalStackLayout
-            Grid.Row="0"
-            Spacing="5">
+        <VerticalStackLayout Grid.Row="0" Spacing="5">
 
             <Label
-                Text="Marcas de autos"
+                Text="{Binding MakeName}"
                 FontSize="28"
                 FontAttributes="Bold" />
 
             <Label
-                Text="Consulta de marcas mediante una API REST"
+                Text="Modelos disponibles"
                 FontSize="14" />
 
         </VerticalStackLayout>
 
-        <Button
-            Grid.Row="1"
-            Text="Cargar marcas"
-            Command="{Binding LoadCarMakesCommand}" />
-
         <VerticalStackLayout
-            Grid.Row="2"
+            Grid.Row="1"
             Spacing="5">
 
             <ActivityIndicator
@@ -47,16 +39,14 @@
         </VerticalStackLayout>
 
         <CollectionView
-            Grid.Row="3"
-            ItemsSource="{Binding CarMakes}">
+            Grid.Row="2"
+            ItemsSource="{Binding Models}">
 
             <CollectionView.EmptyView>
-
                 <Label
-                    Text="Todavía no hay marcas cargadas."
+                    Text="No hay modelos para mostrar."
                     HorizontalTextAlignment="Center"
                     Margin="0,20" />
-
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
@@ -68,25 +58,15 @@
                         Margin="0,5"
                         HasShadow="True">
 
-                        <Frame.GestureRecognizers>
-
-                            <TapGestureRecognizer
-                                Command="{Binding Source={x:Reference MainPageRoot},
-                                                  Path=BindingContext.SelectMakeCommand}"
-                                CommandParameter="{Binding .}" />
-
-                        </Frame.GestureRecognizers>
-
-                        <VerticalStackLayout
-                            Spacing="4">
+                        <VerticalStackLayout Spacing="4">
 
                             <Label
-                                Text="{Binding MakeName}"
+                                Text="{Binding ModelName}"
                                 FontSize="18"
                                 FontAttributes="Bold" />
 
                             <Label
-                                Text="{Binding VehicleTypeName}"
+                                Text="{Binding MakeName}"
                                 FontSize="13" />
 
                         </VerticalStackLayout>
