@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Text.Json;
 using System.Windows.Input;
 using Parcial1.Models;
 using Parcial1.Services;
@@ -72,7 +73,8 @@ public class MainViewModel : BaseViewModel
                 CarMakes.Add(make);
             }
 
-            StatusMessage = $"Se cargaron {CarMakes.Count} marcas.";
+            StatusMessage =
+                $"Se cargaron {CarMakes.Count} marcas.";
         }
         catch (HttpRequestException ex) when (ex.StatusCode is null)
         {
@@ -88,6 +90,11 @@ public class MainViewModel : BaseViewModel
         {
             StatusMessage =
                 "La solicitud tardó demasiado tiempo. Intentá nuevamente.";
+        }
+        catch (JsonException)
+        {
+            StatusMessage =
+                "No se pudo interpretar la respuesta recibida de la API.";
         }
         catch (Exception)
         {
@@ -108,7 +115,8 @@ public class MainViewModel : BaseViewModel
         var parameters = new ShellNavigationQueryParameters
         {
             { "makeId", make.MakeId },
-            { "makeName", make.MakeName }
+            { "makeName", make.MakeName },
+            { "vehicleTypeName", make.VehicleTypeName }
         };
 
         await Shell.Current.GoToAsync(
@@ -116,4 +124,4 @@ public class MainViewModel : BaseViewModel
             parameters
         );
     }
-} 
+}
