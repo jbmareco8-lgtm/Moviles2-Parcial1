@@ -4,28 +4,47 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="Parcial1.ModelsPage"
-    Title="Modelos">
+    Title="Detalle de marca">
 
     <Grid
         Padding="20"
-        RowDefinitions="Auto,Auto,*"
+        RowDefinitions="Auto,Auto,Auto,*"
         RowSpacing="15">
 
-        <VerticalStackLayout Grid.Row="0" Spacing="5">
+        <VerticalStackLayout
+            Grid.Row="0"
+            Spacing="6">
 
             <Label
-                Text="{Binding MakeName}"
+                Text="Detalle de la marca"
+                FontSize="14" />
+
+            <Label
+                Text="{Binding MakeName,
+                               StringFormat='Marca: {0}'}"
                 FontSize="28"
                 FontAttributes="Bold" />
 
             <Label
-                Text="Modelos disponibles"
+                Text="{Binding VehicleTypeName,
+                               StringFormat='Tipo de vehículo: {0}'}"
+                FontSize="15" />
+
+            <Label
+                Text="{Binding MakeId,
+                               StringFormat='ID de marca: {0}'}"
                 FontSize="14" />
 
         </VerticalStackLayout>
 
-        <VerticalStackLayout
+        <Label
             Grid.Row="1"
+            Text="Modelos disponibles"
+            FontSize="20"
+            FontAttributes="Bold" />
+
+        <VerticalStackLayout
+            Grid.Row="2"
             Spacing="5">
 
             <ActivityIndicator
@@ -39,14 +58,16 @@
         </VerticalStackLayout>
 
         <CollectionView
-            Grid.Row="2"
+            Grid.Row="3"
             ItemsSource="{Binding Models}">
 
             <CollectionView.EmptyView>
+
                 <Label
                     Text="No hay modelos para mostrar."
                     HorizontalTextAlignment="Center"
                     Margin="0,20" />
+
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
@@ -58,7 +79,8 @@
                         Margin="0,5"
                         HasShadow="True">
 
-                        <VerticalStackLayout Spacing="4">
+                        <VerticalStackLayout
+                            Spacing="4">
 
                             <Label
                                 Text="{Binding ModelName}"
