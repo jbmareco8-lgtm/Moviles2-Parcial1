@@ -1,10 +1,11 @@
-﻿namespace Parcial1
+﻿namespace Parcial1;
+
+public partial class AppShell : Shell
 {
-    public partial class AppShell : Shell
+    public AppShell()
     {
-        public AppShell()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+
+        Routing.RegisterRoute(nameof(ModelsPage), typeof(ModelsPage));
     }
 }

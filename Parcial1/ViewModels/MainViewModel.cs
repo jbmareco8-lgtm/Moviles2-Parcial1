@@ -35,6 +35,8 @@ public class MainViewModel : BaseViewModel
 
     public ICommand LoadCarMakesCommand { get; }
 
+    public ICommand SelectMakeCommand { get; }
+
     public MainViewModel(IApiService api)
     {
         _api = api;
@@ -42,6 +44,10 @@ public class MainViewModel : BaseViewModel
         LoadCarMakesCommand = new Command(
             async () => await LoadCarMakesAsync(),
             () => !IsBusy
+        );
+
+        SelectMakeCommand = new Command<CarMake>(
+            async make => await GoToModelsAsync(make)
         );
     }
 
@@ -76,5 +82,22 @@ public class MainViewModel : BaseViewModel
         {
             IsBusy = false;
         }
+    }
+
+    private async Task GoToModelsAsync(CarMake? make)
+    {
+        if (make is null)
+            return;
+
+        var parameters = new ShellNavigationQueryParameters
+        {
+            { "makeId", make.MakeId },
+            { "makeName", make.MakeName }
+        };
+
+        await Shell.Current.GoToAsync(
+            nameof(ModelsPage),
+            parameters
+        );
     }
 }
