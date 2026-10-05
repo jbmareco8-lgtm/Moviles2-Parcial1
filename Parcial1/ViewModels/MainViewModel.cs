@@ -68,7 +68,7 @@ public class MainViewModel : BaseViewModel
         {
             var makes = await _api.GetCarMakesAsync();
 
-            foreach (var make in makes)
+            foreach (var make in makes.OrderBy(m => m.MakeName))
             {
                 CarMakes.Add(make);
             }
