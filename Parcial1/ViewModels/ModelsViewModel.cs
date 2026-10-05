@@ -96,7 +96,7 @@ public class ModelsViewModel : BaseViewModel, IQueryAttributable
             var models =
                 await _api.GetModelsForMakeAsync(MakeId);
 
-            foreach (var model in models)
+            foreach (var model in models.OrderBy(m => m.ModelName))
             {
                 Models.Add(model);
             }
