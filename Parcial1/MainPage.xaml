@@ -3,8 +3,11 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:Parcial1.ViewModels"
+    xmlns:models="clr-namespace:Parcial1.Models"
     x:Class="Parcial1.MainPage"
     x:Name="MainPageRoot"
+    x:DataType="vm:MainViewModel"
     Title="Marcas de autos">
 
     <Grid
@@ -53,7 +56,7 @@
             <CollectionView.EmptyView>
 
                 <Label
-                    Text="Todavía no hay marcas cargadas."
+                    Text="Todavia no hay marcas cargadas."
                     HorizontalTextAlignment="Center"
                     Margin="0,20" />
 
@@ -61,7 +64,7 @@
 
             <CollectionView.ItemTemplate>
 
-                <DataTemplate>
+                <DataTemplate x:DataType="models:CarMake">
 
                     <Frame
                         Padding="15"
@@ -71,6 +74,7 @@
                         <Frame.GestureRecognizers>
 
                             <TapGestureRecognizer
+                                x:DataType="{x:Null}"
                                 Command="{Binding Source={x:Reference MainPageRoot},
                                                   Path=BindingContext.SelectMakeCommand}"
                                 CommandParameter="{Binding .}" />
