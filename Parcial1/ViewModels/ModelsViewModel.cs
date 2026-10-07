@@ -101,8 +101,9 @@ public class ModelsViewModel : BaseViewModel, IQueryAttributable
                 Models.Add(model);
             }
 
-            StatusMessage =
-                $"Se cargaron {Models.Count} modelos.";
+            StatusMessage = Models.Count > 0
+                ? $"Se cargaron {Models.Count} modelos."
+                : "No se encontraron modelos para esta marca.";
         }
         catch (HttpRequestException ex)
             when (ex.StatusCode is null)

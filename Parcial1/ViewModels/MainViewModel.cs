@@ -73,8 +73,9 @@ public class MainViewModel : BaseViewModel
                 CarMakes.Add(make);
             }
 
-            StatusMessage =
-                $"Se cargaron {CarMakes.Count} marcas.";
+            StatusMessage = CarMakes.Count > 0
+                ? $"Se cargaron {CarMakes.Count} marcas."
+                : "No se encontraron marcas para mostrar.";
         }
         catch (HttpRequestException ex) when (ex.StatusCode is null)
         {
