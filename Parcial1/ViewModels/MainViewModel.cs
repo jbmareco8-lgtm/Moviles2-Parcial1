@@ -84,9 +84,22 @@ public class MainViewModel : BaseViewModel
         }
         catch (HttpRequestException ex)
         {
-            StatusMessage =
-                $"Error HTTP {(int?)ex.StatusCode}: {ex.StatusCode}.";
+            StatusMessage = ex.StatusCode switch
+            {
+                System.Net.HttpStatusCode.BadRequest =>
+                    "Error 400: la solicitud enviada no es valida.",
+
+                System.Net.HttpStatusCode.NotFound =>
+                    "Error 404: no se encontro el recurso solicitado.",
+
+                System.Net.HttpStatusCode.InternalServerError =>
+                    "Error 500: ocurrio un problema interno en el servidor.",
+
+                _ =>
+                    $"Error HTTP {(int?)ex.StatusCode}: {ex.StatusCode}."
+            };
         }
+    
         catch (TaskCanceledException)
         {
             StatusMessage =
