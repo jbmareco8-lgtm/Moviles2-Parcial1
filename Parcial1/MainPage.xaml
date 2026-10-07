@@ -49,59 +49,65 @@
 
         </VerticalStackLayout>
 
-        <CollectionView
+        <RefreshView
             Grid.Row="3"
-            ItemsSource="{Binding CarMakes}">
+            Command="{Binding LoadCarMakesCommand}"
+            IsRefreshing="{Binding IsBusy, Mode=OneWay}">
 
-            <CollectionView.EmptyView>
+            <CollectionView
+                ItemsSource="{Binding CarMakes}">
 
-                <Label
-                    Text="Todavia no hay marcas cargadas."
-                    HorizontalTextAlignment="Center"
-                    Margin="0,20" />
+                <CollectionView.EmptyView>
 
-            </CollectionView.EmptyView>
+                    <Label
+                        Text="Todavia no hay marcas cargadas."
+                        HorizontalTextAlignment="Center"
+                        Margin="0,20" />
 
-            <CollectionView.ItemTemplate>
+                </CollectionView.EmptyView>
 
-                <DataTemplate x:DataType="models:CarMake">
+                <CollectionView.ItemTemplate>
 
-                    <Frame
-                        Padding="15"
-                        Margin="0,5"
-                        HasShadow="True">
+                    <DataTemplate x:DataType="models:CarMake">
 
-                        <Frame.GestureRecognizers>
+                        <Frame
+                            Padding="15"
+                            Margin="0,5"
+                            HasShadow="True">
 
-                            <TapGestureRecognizer
-                                x:DataType="{x:Null}"
-                                Command="{Binding Source={x:Reference MainPageRoot},
-                                                  Path=BindingContext.SelectMakeCommand}"
-                                CommandParameter="{Binding .}" />
+                            <Frame.GestureRecognizers>
 
-                        </Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    x:DataType="{x:Null}"
+                                    Command="{Binding Source={x:Reference MainPageRoot},
+                                                      Path=BindingContext.SelectMakeCommand}"
+                                    CommandParameter="{Binding .}" />
 
-                        <VerticalStackLayout
-                            Spacing="4">
+                            </Frame.GestureRecognizers>
 
-                            <Label
-                                Text="{Binding MakeName}"
-                                FontSize="18"
-                                FontAttributes="Bold" />
+                            <VerticalStackLayout
+                                Spacing="4">
 
-                            <Label
-                                Text="{Binding VehicleTypeName}"
-                                FontSize="13" />
+                                <Label
+                                    Text="{Binding MakeName}"
+                                    FontSize="18"
+                                    FontAttributes="Bold" />
 
-                        </VerticalStackLayout>
+                                <Label
+                                    Text="{Binding VehicleTypeName}"
+                                    FontSize="13" />
 
-                    </Frame>
+                            </VerticalStackLayout>
 
-                </DataTemplate>
+                        </Frame>
 
-            </CollectionView.ItemTemplate>
+                    </DataTemplate>
 
-        </CollectionView>
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </RefreshView>
 
     </Grid>
 
