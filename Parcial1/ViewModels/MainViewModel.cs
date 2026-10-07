@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Net;
 using System.Text.Json;
 using System.Windows.Input;
 using Parcial1.Models;
@@ -8,11 +9,15 @@ namespace Parcial1.ViewModels;
 
 public class MainViewModel : BaseViewModel
 {
-    private readonly IApiService _api;
+    private readonly IApiService _apiService;
 
-    public ObservableCollection<CarMake> CarMakes { get; } = new();
+    private readonly List<CarMake> _allCarMakes = new();
 
     private bool _isBusy;
+    private string _statusMessage = string.Empty;
+    private string _searchText = string.Empty;
+
+    public ObservableCollection<CarMake> CarMakes { get; } = new();
 
     public bool IsBusy
     {
@@ -26,52 +31,59 @@ public class MainViewModel : BaseViewModel
         }
     }
 
-    private string _statusMessage = string.Empty;
-
     public string StatusMessage
     {
         get => _statusMessage;
         set => SetProperty(ref _statusMessage, value);
     }
 
-    public ICommand LoadCarMakesCommand { get; }
+    public string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            if (SetProperty(ref _searchText, value))
+            {
+                FilterCarMakes();
+            }
+        }
+    }
 
+    public ICommand LoadCarMakesCommand { get; }
     public ICommand SelectMakeCommand { get; }
 
-    public MainViewModel(IApiService api)
+    public MainViewModel(IApiService apiService)
     {
-        _api = api;
+        _apiService = apiService;
 
         LoadCarMakesCommand = new Command(
             async () => await LoadCarMakesAsync(),
-            () => !IsBusy
-        );
+            () => !IsBusy);
 
         SelectMakeCommand = new Command<CarMake>(
-            async make => await GoToModelsAsync(make)
-        );
-    }
-
-    private void UpdateCanExecutes()
-    {
-        (LoadCarMakesCommand as Command)?.ChangeCanExecute();
+            async make => await SelectMakeAsync(make));
     }
 
     private async Task LoadCarMakesAsync()
     {
-        StatusMessage = string.Empty;
-        CarMakes.Clear();
-
-        IsBusy = true;
+        if (IsBusy)
+            return;
 
         try
         {
-            var makes = await _api.GetCarMakesAsync();
+            IsBusy = true;
+            StatusMessage = "Cargando marcas...";
+
+            var makes = await _apiService.GetCarMakesAsync();
+
+            _allCarMakes.Clear();
 
             foreach (var make in makes.OrderBy(m => m.MakeName))
             {
-                CarMakes.Add(make);
+                _allCarMakes.Add(make);
             }
+
+            FilterCarMakes();
 
             StatusMessage = CarMakes.Count > 0
                 ? $"Se cargaron {CarMakes.Count} marcas."
@@ -80,30 +92,29 @@ public class MainViewModel : BaseViewModel
         catch (HttpRequestException ex) when (ex.StatusCode is null)
         {
             StatusMessage =
-                "No se pudo conectar con el servidor. Verificá tu conexión a Internet.";
+                "No se pudo conectar con el servidor. Verifica tu conexion a Internet.";
         }
         catch (HttpRequestException ex)
         {
             StatusMessage = ex.StatusCode switch
             {
-                System.Net.HttpStatusCode.BadRequest =>
+                HttpStatusCode.BadRequest =>
                     "Error 400: la solicitud enviada no es valida.",
 
-                System.Net.HttpStatusCode.NotFound =>
+                HttpStatusCode.NotFound =>
                     "Error 404: no se encontro el recurso solicitado.",
 
-                System.Net.HttpStatusCode.InternalServerError =>
+                HttpStatusCode.InternalServerError =>
                     "Error 500: ocurrio un problema interno en el servidor.",
 
                 _ =>
                     $"Error HTTP {(int?)ex.StatusCode}: {ex.StatusCode}."
             };
         }
-    
         catch (TaskCanceledException)
         {
             StatusMessage =
-                "La solicitud tardó demasiado tiempo. Intentá nuevamente.";
+                "La solicitud tardo demasiado tiempo. Intenta nuevamente.";
         }
         catch (JsonException)
         {
@@ -113,7 +124,7 @@ public class MainViewModel : BaseViewModel
         catch (Exception)
         {
             StatusMessage =
-                "Ocurrió un error inesperado al cargar las marcas.";
+                "Ocurrio un error inesperado al cargar las marcas.";
         }
         finally
         {
@@ -121,7 +132,27 @@ public class MainViewModel : BaseViewModel
         }
     }
 
-    private async Task GoToModelsAsync(CarMake? make)
+    private void FilterCarMakes()
+    {
+        CarMakes.Clear();
+
+        IEnumerable<CarMake> filteredMakes = _allCarMakes;
+
+        if (!string.IsNullOrWhiteSpace(SearchText))
+        {
+            filteredMakes = _allCarMakes.Where(make =>
+                make.MakeName.Contains(
+                    SearchText.Trim(),
+                    StringComparison.OrdinalIgnoreCase));
+        }
+
+        foreach (var make in filteredMakes)
+        {
+            CarMakes.Add(make);
+        }
+    }
+
+    private async Task SelectMakeAsync(CarMake? make)
     {
         if (make is null)
             return;
@@ -135,7 +166,14 @@ public class MainViewModel : BaseViewModel
 
         await Shell.Current.GoToAsync(
             nameof(ModelsPage),
-            parameters
-        );
+            parameters);
+    }
+
+    private void UpdateCanExecutes()
+    {
+        if (LoadCarMakesCommand is Command loadCommand)
+        {
+            loadCommand.ChangeCanExecute();
+        }
     }
 }

@@ -12,7 +12,7 @@
 
     <Grid
         Padding="20"
-        RowDefinitions="Auto,Auto,Auto,*"
+        RowDefinitions="Auto,Auto,Auto,Auto,*"
         RowSpacing="15">
 
         <VerticalStackLayout
@@ -35,8 +35,13 @@
             Text="Cargar marcas"
             Command="{Binding LoadCarMakesCommand}" />
 
-        <VerticalStackLayout
+        <SearchBar
             Grid.Row="2"
+            Placeholder="Buscar marca..."
+            Text="{Binding SearchText}" />
+
+        <VerticalStackLayout
+            Grid.Row="3"
             Spacing="5">
 
             <ActivityIndicator
@@ -50,7 +55,7 @@
         </VerticalStackLayout>
 
         <RefreshView
-            Grid.Row="3"
+            Grid.Row="4"
             Command="{Binding LoadCarMakesCommand}"
             IsRefreshing="{Binding IsBusy, Mode=OneWay}">
 
@@ -60,7 +65,7 @@
                 <CollectionView.EmptyView>
 
                     <Label
-                        Text="Todavia no hay marcas cargadas."
+                        Text="No hay marcas para mostrar."
                         HorizontalTextAlignment="Center"
                         Margin="0,20" />
 
