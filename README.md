@@ -1,6 +1,6 @@
 # parcial 1 - desarrollo de aplicaciones moviles II
 
-este proyecto fue realizado en .NET MAUI para el primer parcial de la materia.
+este proyecto fue realizado para el primer parcial de la materia.
 
 la aplicacion consume una API publica de vehiculos y permite cargar distintas marcas de autos. al seleccionar una marca se puede entrar a otra pantalla donde se muestran algunos datos de la marca y sus modelos disponibles.
 
@@ -38,7 +38,7 @@ el proyecto esta separado principalmente en:
 - viewmodels
 - views
 
-tambien usamos una interfaz `IApiService` para manejar las consultas a la API.
+tambien use una interfaz `IApiService` para manejar las consultas a la API.
 
 la mayor parte de la logica se encuentra en los ViewModels para evitar poner codigo importante dentro de las paginas.
 
@@ -61,7 +61,6 @@ al seleccionar una marca se abre una pantalla de detalle donde se muestra el nom
 - System.Text.Json
 - Git y GitHub
 
-## integrantes
+## integrante
 
 - Juan Bautista Mareco
-- Matias Nicolas Bozzone
