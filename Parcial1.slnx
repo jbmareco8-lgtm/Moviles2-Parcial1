@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="Parcial1.Core/Parcial1.Core.csproj" />
+  <Project Path="Parcial1.Tests/Parcial1.Tests.csproj" />
   <Project Path="Parcial1/Parcial1.csproj" />
 </Solution>
