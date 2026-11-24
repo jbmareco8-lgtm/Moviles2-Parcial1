@@ -75,12 +75,14 @@
 
                     <DataTemplate x:DataType="models:CarMake">
 
-                        <Frame
+                        <Border
                             Padding="15"
                             Margin="0,5"
-                            HasShadow="True">
+                            Stroke="Gray"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 12">
 
-                            <Frame.GestureRecognizers>
+                            <Border.GestureRecognizers>
 
                                 <TapGestureRecognizer
                                     x:DataType="{x:Null}"
@@ -88,7 +90,7 @@
                                                       Path=BindingContext.SelectMakeCommand}"
                                     CommandParameter="{Binding .}" />
 
-                            </Frame.GestureRecognizers>
+                            </Border.GestureRecognizers>
 
                             <VerticalStackLayout
                                 Spacing="4">
@@ -104,7 +106,7 @@
 
                             </VerticalStackLayout>
 
-                        </Frame>
+                        </Border>
 
                     </DataTemplate>
 
