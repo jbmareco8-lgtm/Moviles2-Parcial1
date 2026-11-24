@@ -46,8 +46,12 @@ public static class MauiProgram
         // ViewModels y paginas
         builder.Services.AddSingleton<MainViewModel>();
         builder.Services.AddSingleton<MainPage>();
+
         builder.Services.AddTransient<ModelsViewModel>();
         builder.Services.AddTransient<ModelsPage>();
+
+        builder.Services.AddTransient<FavoritesViewModel>();
+        builder.Services.AddTransient<FavoritesPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();
