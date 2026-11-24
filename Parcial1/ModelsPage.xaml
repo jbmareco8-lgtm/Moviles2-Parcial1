@@ -38,6 +38,16 @@
                                StringFormat='ID de marca: {0}'}"
                 FontSize="14" />
 
+            <Button
+                Text="Guardar en favoritos"
+                Command="{Binding SaveFavoriteCommand}"
+                Margin="0,10,0,0" />
+
+            <Label
+                Text="{Binding FavoriteStatusMessage}"
+                HorizontalTextAlignment="Center"
+                FontSize="14" />
+
         </VerticalStackLayout>
 
         <Label
