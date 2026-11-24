@@ -71,4 +71,8 @@
 	  </MauiXaml>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Parcial1.Core\Parcial1.Core.csproj" />
+	</ItemGroup>
+
 </Project>
