@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Text.Json;
 using Parcial1.Models;
 using Parcial1.Services;
 using Parcial1.Core.Models;
@@ -186,43 +185,11 @@ public class ModelsViewModel : BaseViewModel, IQueryAttributable
                 ? $"Se cargaron {Models.Count} modelos."
                 : "No se encontraron modelos para esta marca.";
         }
-        catch (HttpRequestException ex)
-            when (ex.StatusCode is null)
+        catch (Exception ex)
         {
-            StatusMessage =
-                "No se pudo conectar con el servidor. Verificá tu conexión a Internet.";
-        }
-        catch (HttpRequestException ex)
-        {
-            StatusMessage = ex.StatusCode switch
-            {
-                System.Net.HttpStatusCode.BadRequest =>
-                    "Error 400: la solicitud enviada no es valida.",
-
-                System.Net.HttpStatusCode.NotFound =>
-                    "Error 404: no se encontro el recurso solicitado.",
-
-                System.Net.HttpStatusCode.InternalServerError =>
-                    "Error 500: ocurrio un problema interno en el servidor.",
-
-                _ =>
-                    $"Error HTTP {(int?)ex.StatusCode}: {ex.StatusCode}."
-            };
-        }
-        catch (TaskCanceledException)
-        {
-            StatusMessage =
-                "La solicitud tardó demasiado tiempo. Intentá nuevamente.";
-        }
-        catch (JsonException)
-        {
-            StatusMessage =
-                "No se pudo interpretar la respuesta recibida de la API.";
-        }
-        catch (Exception)
-        {
-            StatusMessage =
-                "Ocurrió un error inesperado al cargar los modelos.";
+            StatusMessage = ApiErrorMessages.GetMessage(
+                ex,
+                "Ocurrio un error inesperado al cargar los modelos.");
         }
         finally
         {
