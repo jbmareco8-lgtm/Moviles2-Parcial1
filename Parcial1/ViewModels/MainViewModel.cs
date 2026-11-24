@@ -1,9 +1,8 @@
 ﻿using System.Collections.ObjectModel;
-using System.Net;
-using System.Text.Json;
 using System.Windows.Input;
 using Parcial1.Models;
 using Parcial1.Services;
+using Parcial1.Core.Services;
 
 namespace Parcial1.ViewModels;
 
@@ -89,42 +88,11 @@ public class MainViewModel : BaseViewModel
                 ? $"Se cargaron {CarMakes.Count} marcas."
                 : "No se encontraron marcas para mostrar.";
         }
-        catch (HttpRequestException ex) when (ex.StatusCode is null)
+        catch (Exception ex)
         {
-            StatusMessage =
-                "No se pudo conectar con el servidor. Verifica tu conexion a Internet.";
-        }
-        catch (HttpRequestException ex)
-        {
-            StatusMessage = ex.StatusCode switch
-            {
-                HttpStatusCode.BadRequest =>
-                    "Error 400: la solicitud enviada no es valida.",
-
-                HttpStatusCode.NotFound =>
-                    "Error 404: no se encontro el recurso solicitado.",
-
-                HttpStatusCode.InternalServerError =>
-                    "Error 500: ocurrio un problema interno en el servidor.",
-
-                _ =>
-                    $"Error HTTP {(int?)ex.StatusCode}: {ex.StatusCode}."
-            };
-        }
-        catch (TaskCanceledException)
-        {
-            StatusMessage =
-                "La solicitud tardo demasiado tiempo. Intenta nuevamente.";
-        }
-        catch (JsonException)
-        {
-            StatusMessage =
-                "No se pudo interpretar la respuesta recibida de la API.";
-        }
-        catch (Exception)
-        {
-            StatusMessage =
-                "Ocurrio un error inesperado al cargar las marcas.";
+            StatusMessage = ApiErrorMessages.GetMessage(
+                ex,
+                "Ocurrio un error inesperado al cargar las marcas.");
         }
         finally
         {
