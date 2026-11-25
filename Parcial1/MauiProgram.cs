@@ -27,7 +27,6 @@ public static class MauiProgram
                 new Uri("https://vpic.nhtsa.dot.gov/api/vehicles/");
         });
 
-        // Base de datos local
         builder.Services.AddSingleton<DatabaseService>(services =>
         {
             var dbPath = Path.Combine(
@@ -37,13 +36,13 @@ public static class MauiProgram
             return new DatabaseService(dbPath);
         });
 
-        // Repositorio y servicio de favoritos
         builder.Services.AddSingleton<IFavoriteMakeRepository,
             FavoriteMakeRepository>();
 
         builder.Services.AddTransient<FavoriteMakeService>();
 
-        // ViewModels y paginas
+        builder.Services.AddSingleton<DeviceService>();
+
         builder.Services.AddSingleton<MainViewModel>();
         builder.Services.AddSingleton<MainPage>();
 

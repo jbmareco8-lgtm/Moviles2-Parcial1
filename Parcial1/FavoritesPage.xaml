@@ -89,6 +89,40 @@
                                     StringFormat='Guardada el {0:dd/MM/yyyy}'}"
                                 FontSize="12" />
 
+                            <Image
+                                Source="{Binding PhotoPath}"
+                                IsVisible="{Binding HasPhoto}"
+                                HeightRequest="160"
+                                Aspect="AspectFit" />
+
+                            <Label
+                                Text="{Binding LocationText}"
+                                FontSize="13" />
+
+                            <Grid
+                                ColumnDefinitions="*,*"
+                                ColumnSpacing="10">
+
+                                <Button
+                                    Grid.Column="0"
+                                    Text="Tomar foto"
+                                    Command="{Binding
+                                        Source={x:Reference FavoritesPageRoot},
+                                        Path=BindingContext.TakePhotoCommand,
+                                        x:DataType={x:Null}}"
+                                    CommandParameter="{Binding .}" />
+
+                                <Button
+                                    Grid.Column="1"
+                                    Text="Guardar ubicacion"
+                                    Command="{Binding
+                                        Source={x:Reference FavoritesPageRoot},
+                                        Path=BindingContext.SaveLocationCommand,
+                                        x:DataType={x:Null}}"
+                                    CommandParameter="{Binding .}" />
+
+                            </Grid>
+
                             <Grid
                                 ColumnDefinitions="*,*"
                                 ColumnSpacing="10">
