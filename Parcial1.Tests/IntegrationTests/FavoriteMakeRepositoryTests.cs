@@ -37,17 +37,14 @@ public class FavoriteMakeRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task GetAllAsync_BaseVacia_RetornaListaVacia()
     {
-        // Act
         var result = await _repository.GetAllAsync();
 
-        // Assert
         Assert.Empty(result);
     }
 
     [Fact]
     public async Task InsertAsync_GuardaMarcaCorrectamente()
     {
-        // Arrange
         var favorite = new FavoriteMake
         {
             MakeId = 1,
@@ -55,12 +52,10 @@ public class FavoriteMakeRepositoryTests : IAsyncLifetime
             VehicleTypeName = "Passenger Car"
         };
 
-        // Act
         var inserted = await _repository.InsertAsync(favorite);
 
         var result = await _repository.GetByIdAsync(1);
 
-        // Assert
         Assert.Equal(1, inserted);
         Assert.NotNull(result);
         Assert.Equal(1, result.MakeId);
@@ -71,7 +66,6 @@ public class FavoriteMakeRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task GetAllAsync_RetornaMarcasOrdenadas()
     {
-        // Arrange
         await _repository.InsertAsync(new FavoriteMake
         {
             MakeId = 1,
@@ -84,10 +78,8 @@ public class FavoriteMakeRepositoryTests : IAsyncLifetime
             MakeName = "Ford"
         });
 
-        // Act
         var result = await _repository.GetAllAsync();
 
-        // Assert
         Assert.Equal(2, result.Count);
         Assert.Equal("Ford", result[0].MakeName);
         Assert.Equal("Toyota", result[1].MakeName);
@@ -96,7 +88,6 @@ public class FavoriteMakeRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task UpdateAsync_ModificaMarcaGuardada()
     {
-        // Arrange
         var favorite = new FavoriteMake
         {
             MakeId = 1,
@@ -107,12 +98,10 @@ public class FavoriteMakeRepositoryTests : IAsyncLifetime
 
         favorite.VehicleTypeName = "Passenger Car";
 
-        // Act
         var updated = await _repository.UpdateAsync(favorite);
 
         var result = await _repository.GetByIdAsync(1);
 
-        // Assert
         Assert.Equal(1, updated);
         Assert.NotNull(result);
         Assert.Equal("Passenger Car", result.VehicleTypeName);
@@ -121,7 +110,6 @@ public class FavoriteMakeRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task DeleteAsync_EliminaMarcaGuardada()
     {
-        // Arrange
         var favorite = new FavoriteMake
         {
             MakeId = 1,
@@ -130,12 +118,10 @@ public class FavoriteMakeRepositoryTests : IAsyncLifetime
 
         await _repository.InsertAsync(favorite);
 
-        // Act
         var deleted = await _repository.DeleteAsync(favorite);
 
         var result = await _repository.GetByIdAsync(1);
 
-        // Assert
         Assert.Equal(1, deleted);
         Assert.Null(result);
     }
@@ -151,7 +137,6 @@ public class FavoriteMakeRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task AddAsync_ServicioYRepositorio_EvitanDuplicados()
     {
-        // Arrange
         var service = new FavoriteMakeService(_repository);
 
         var favorite = new FavoriteMake
@@ -160,15 +145,68 @@ public class FavoriteMakeRepositoryTests : IAsyncLifetime
             MakeName = "Toyota"
         };
 
-        // Act
         var firstResult = await service.AddAsync(favorite);
         var secondResult = await service.AddAsync(favorite);
 
         var favorites = await service.GetAllAsync();
 
-        // Assert
         Assert.True(firstResult);
         Assert.False(secondResult);
         Assert.Single(favorites);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_GuardaUbicacionYFoto()
+    {
+        // Arrange
+        var service = new FavoriteMakeService(_repository);
+
+        var favorite = new FavoriteMake
+        {
+            MakeId = 1,
+            MakeName = "Toyota",
+            VehicleTypeName = "Passenger Car"
+        };
+
+        Assert.True(await service.AddAsync(favorite));
+
+        // Act
+        var location = await service.UpdateLocationAsync(
+            1, -34.42, -58.57);
+
+        var photo = await service.UpdatePhotoAsync(
+            1, "fotos/toyota.jpg");
+
+        var result = await _repository.GetByIdAsync(1);
+
+        // Assert
+        Assert.NotNull(location);
+        Assert.NotNull(photo);
+        Assert.NotNull(result);
+
+        Assert.Equal<double?>(-34.42, result.Latitude);
+        Assert.Equal<double?>(-58.57, result.Longitude);
+        Assert.Equal("fotos/toyota.jpg", result.PhotoPath);
+        Assert.Equal("Toyota", result.MakeName);
+        Assert.Equal("Passenger Car", result.VehicleTypeName);
+        Assert.True(result.HasPhoto);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_MarcaInexistente_NoGuardaDatos()
+    {
+        var service = new FavoriteMakeService(_repository);
+
+        var location = await service.UpdateLocationAsync(
+            1, -34.42, -58.57);
+
+        var photo = await service.UpdatePhotoAsync(
+            1, "fotos/toyota.jpg");
+
+        var favorites = await _repository.GetAllAsync();
+
+        Assert.Null(location);
+        Assert.Null(photo);
+        Assert.Empty(favorites);
     }
 }
