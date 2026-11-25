@@ -78,4 +78,8 @@
 	  <ProjectReference Include="..\Parcial1.Core\Parcial1.Core.csproj" />
 	</ItemGroup>
 
+	<PropertyGroup Condition="'$(CiAndroidOnly)' == 'true'">
+		<TargetFrameworks>net9.0-android</TargetFrameworks>
+	</PropertyGroup>
+
 </Project>
