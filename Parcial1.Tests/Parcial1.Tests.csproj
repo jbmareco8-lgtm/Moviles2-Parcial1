@@ -25,8 +25,4 @@
 		<ProjectReference Include="..\Parcial1.Core\Parcial1.Core.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="IntegrationTests\" />
-	</ItemGroup>
-
 </Project>
