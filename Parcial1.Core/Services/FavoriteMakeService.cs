@@ -76,4 +76,25 @@ public class FavoriteMakeService
 
         return result > 0 ? favorite : null;
     }
+
+    public async Task<FavoriteMake?> UpdatePhotoAsync(
+        int makeId,
+        string photoPath)
+    {
+        FavoriteMakeValidator.ValidateId(makeId);
+        FavoriteMakeValidator.ValidatePhotoPath(photoPath);
+
+        var favorite = await _repository.GetByIdAsync(makeId);
+
+        if (favorite is null)
+        {
+            return null;
+        }
+
+        favorite.PhotoPath = photoPath;
+
+        var result = await _repository.UpdateAsync(favorite);
+
+        return result > 0 ? favorite : null;
+    }
 }

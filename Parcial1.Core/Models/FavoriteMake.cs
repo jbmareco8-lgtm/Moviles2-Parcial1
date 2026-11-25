@@ -19,6 +19,12 @@ public class FavoriteMake
 
     public double? Longitude { get; set; }
 
+    public string? PhotoPath { get; set; }
+
+    [Ignore]
+    public bool HasPhoto =>
+        !string.IsNullOrWhiteSpace(PhotoPath);
+
     [Ignore]
     public string LocationText =>
         Latitude.HasValue && Longitude.HasValue

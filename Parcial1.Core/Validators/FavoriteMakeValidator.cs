@@ -44,4 +44,13 @@ public static class FavoriteMakeValidator
                 "La longitud no es valida.");
         }
     }
+
+    public static void ValidatePhotoPath(string photoPath)
+    {
+        if (string.IsNullOrWhiteSpace(photoPath))
+        {
+            throw new ArgumentException(
+                "La ruta de la foto no es valida.");
+        }
+    }
 }

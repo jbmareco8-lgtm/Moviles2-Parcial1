@@ -27,6 +27,7 @@ public class FavoritesViewModel : BaseViewModel
                 DeleteFavoriteCommand.ChangeCanExecute();
                 SelectFavoriteCommand.ChangeCanExecute();
                 SaveLocationCommand.ChangeCanExecute();
+                TakePhotoCommand.ChangeCanExecute();
             }
         }
     }
@@ -46,6 +47,8 @@ public class FavoritesViewModel : BaseViewModel
     public Command<FavoriteMake> SelectFavoriteCommand { get; }
 
     public Command<FavoriteMake> SaveLocationCommand { get; }
+
+    public Command<FavoriteMake> TakePhotoCommand { get; }
 
     public FavoritesViewModel(
         FavoriteMakeService favoriteService,
@@ -68,6 +71,10 @@ public class FavoritesViewModel : BaseViewModel
 
         SaveLocationCommand = new Command<FavoriteMake>(
             async favorite => await SaveLocationAsync(favorite),
+            favorite => !IsBusy && favorite is not null);
+
+        TakePhotoCommand = new Command<FavoriteMake>(
+            async favorite => await TakePhotoAsync(favorite),
             favorite => !IsBusy && favorite is not null);
     }
 
@@ -118,6 +125,8 @@ public class FavoritesViewModel : BaseViewModel
 
             if (deleted)
             {
+                _deviceService.DeletePhoto(favorite.PhotoPath);
+
                 Favorites.Remove(favorite);
 
                 StatusMessage =
@@ -245,6 +254,92 @@ public class FavoritesViewModel : BaseViewModel
         }
         finally
         {
+            IsBusy = false;
+        }
+    }
+
+    private async Task TakePhotoAsync(FavoriteMake? favorite)
+    {
+        if (favorite is null || IsBusy)
+            return;
+
+        string? photoPath = null;
+        bool saved = false;
+
+        try
+        {
+            IsBusy = true;
+
+            StatusMessage = "Abriendo camara...";
+
+            photoPath =
+                await _deviceService.CapturePhotoAsync();
+
+            if (photoPath is null)
+            {
+                StatusMessage =
+                    "No se tomo ninguna fotografia.";
+
+                return;
+            }
+
+            var previousPhoto = favorite.PhotoPath;
+
+            var updated = await _favoriteService.UpdatePhotoAsync(
+                favorite.MakeId,
+                photoPath);
+
+            if (updated is null)
+            {
+                StatusMessage =
+                    "No se pudo guardar la fotografia.";
+
+                return;
+            }
+
+            saved = true;
+
+            _deviceService.DeletePhoto(previousPhoto);
+
+            var index = Favorites.IndexOf(favorite);
+
+            if (index >= 0)
+            {
+                Favorites[index] = updated;
+            }
+
+            StatusMessage =
+                "Fotografia guardada correctamente.";
+
+            _deviceService.VibrateConfirmation();
+        }
+        catch (PermissionException)
+        {
+            StatusMessage =
+                "No se puede acceder a la camara sin permiso.";
+        }
+        catch (UnauthorizedAccessException)
+        {
+            StatusMessage =
+                "No se otorgo el permiso de camara.";
+        }
+        catch (FeatureNotSupportedException)
+        {
+            StatusMessage =
+                "La camara no esta disponible en este dispositivo.";
+        }
+        catch (Exception)
+        {
+            StatusMessage =
+                "Ocurrio un error al tomar o guardar la fotografia.";
+        }
+        finally
+        {
+            if (!saved)
+            {
+                _deviceService.DeletePhoto(photoPath);
+            }
+
             IsBusy = false;
         }
     }

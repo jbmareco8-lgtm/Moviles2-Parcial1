@@ -42,6 +42,9 @@
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>La aplicacion necesita tu ubicacion para asociarla a una marca favorita.</string>
 
+		<key>NSCameraUsageDescription</key>
+		<string>La aplicacion necesita usar la camara para tomar fotos de los vehiculos.</string>
+
 	</dict>
 
 </plist>
