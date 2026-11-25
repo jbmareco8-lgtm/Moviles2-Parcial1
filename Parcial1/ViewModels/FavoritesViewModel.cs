@@ -1,14 +1,18 @@
 ﻿using System.Collections.ObjectModel;
+using Microsoft.Maui.ApplicationModel;
 using Parcial1.Core.Models;
 using Parcial1.Core.Services;
+using Parcial1.Services;
 
 namespace Parcial1.ViewModels;
 
 public class FavoritesViewModel : BaseViewModel
 {
     private readonly FavoriteMakeService _favoriteService;
+    private readonly DeviceService _deviceService;
 
-    public ObservableCollection<FavoriteMake> Favorites { get; } = new();
+    public ObservableCollection<FavoriteMake> Favorites { get; }
+        = new();
 
     private bool _isBusy;
 
@@ -22,6 +26,7 @@ public class FavoritesViewModel : BaseViewModel
                 LoadFavoritesCommand.ChangeCanExecute();
                 DeleteFavoriteCommand.ChangeCanExecute();
                 SelectFavoriteCommand.ChangeCanExecute();
+                SaveLocationCommand.ChangeCanExecute();
             }
         }
     }
@@ -40,9 +45,14 @@ public class FavoritesViewModel : BaseViewModel
 
     public Command<FavoriteMake> SelectFavoriteCommand { get; }
 
-    public FavoritesViewModel(FavoriteMakeService favoriteService)
+    public Command<FavoriteMake> SaveLocationCommand { get; }
+
+    public FavoritesViewModel(
+        FavoriteMakeService favoriteService,
+        DeviceService deviceService)
     {
         _favoriteService = favoriteService;
+        _deviceService = deviceService;
 
         LoadFavoritesCommand = new Command(
             async () => await LoadFavoritesAsync(),
@@ -54,6 +64,10 @@ public class FavoritesViewModel : BaseViewModel
 
         SelectFavoriteCommand = new Command<FavoriteMake>(
             async favorite => await SelectFavoriteAsync(favorite),
+            favorite => !IsBusy && favorite is not null);
+
+        SaveLocationCommand = new Command<FavoriteMake>(
+            async favorite => await SaveLocationAsync(favorite),
             favorite => !IsBusy && favorite is not null);
     }
 
@@ -105,11 +119,16 @@ public class FavoritesViewModel : BaseViewModel
             if (deleted)
             {
                 Favorites.Remove(favorite);
-                StatusMessage = "Marca eliminada de favoritos.";
+
+                StatusMessage =
+                    "Marca eliminada de favoritos.";
+
+                _deviceService.VibrateConfirmation();
             }
             else
             {
-                StatusMessage = "No se encontro la marca guardada.";
+                StatusMessage =
+                    "No se encontro la marca guardada.";
             }
         }
         catch (Exception)
@@ -144,7 +163,85 @@ public class FavoritesViewModel : BaseViewModel
         }
         catch (Exception)
         {
-            StatusMessage = "No se pudo abrir el detalle de la marca.";
+            StatusMessage =
+                "No se pudo abrir el detalle de la marca.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task SaveLocationAsync(FavoriteMake? favorite)
+    {
+        if (favorite is null || IsBusy)
+            return;
+
+        try
+        {
+            IsBusy = true;
+
+            StatusMessage = "Obteniendo ubicacion actual...";
+
+            var location = await _deviceService.GetLocationAsync();
+
+            if (location is null)
+            {
+                StatusMessage =
+                    "No se pudo obtener la ubicacion.";
+
+                return;
+            }
+
+            var updated = await _favoriteService.UpdateLocationAsync(
+                favorite.MakeId,
+                location.Latitude,
+                location.Longitude);
+
+            if (updated is null)
+            {
+                StatusMessage =
+                    "No se pudo guardar la ubicacion.";
+
+                return;
+            }
+
+            var index = Favorites.IndexOf(favorite);
+
+            if (index >= 0)
+            {
+                Favorites[index] = updated;
+            }
+
+            StatusMessage =
+                "Ubicacion guardada correctamente.";
+
+            _deviceService.VibrateConfirmation();
+        }
+        catch (PermissionException)
+        {
+            StatusMessage =
+                "No se puede acceder a la ubicacion sin permiso.";
+        }
+        catch (UnauthorizedAccessException)
+        {
+            StatusMessage =
+                "No se otorgo el permiso de ubicacion.";
+        }
+        catch (FeatureNotEnabledException)
+        {
+            StatusMessage =
+                "Activa la ubicacion del dispositivo.";
+        }
+        catch (FeatureNotSupportedException)
+        {
+            StatusMessage =
+                "Esta funcion requiere un dispositivo movil compatible.";
+        }
+        catch (Exception)
+        {
+            StatusMessage =
+                "Ocurrio un error al obtener o guardar la ubicacion.";
         }
         finally
         {

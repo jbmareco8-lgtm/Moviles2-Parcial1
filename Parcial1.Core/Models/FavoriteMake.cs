@@ -14,4 +14,14 @@ public class FavoriteMake
     public string VehicleTypeName { get; set; } = string.Empty;
 
     public DateTime AddedAt { get; set; } = DateTime.Now;
+
+    public double? Latitude { get; set; }
+
+    public double? Longitude { get; set; }
+
+    [Ignore]
+    public string LocationText =>
+        Latitude.HasValue && Longitude.HasValue
+            ? $"Ubicacion: {Latitude.Value:F5}, {Longitude.Value:F5}"
+            : "Sin ubicacion guardada";
 }

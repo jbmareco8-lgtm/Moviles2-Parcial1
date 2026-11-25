@@ -89,6 +89,18 @@
                                     StringFormat='Guardada el {0:dd/MM/yyyy}'}"
                                 FontSize="12" />
 
+                            <Label
+                                Text="{Binding LocationText}"
+                                FontSize="13" />
+
+                            <Button
+                                Text="Guardar ubicacion"
+                                Command="{Binding
+                                    Source={x:Reference FavoritesPageRoot},
+                                    Path=BindingContext.SaveLocationCommand,
+                                    x:DataType={x:Null}}"
+                                CommandParameter="{Binding .}" />
+
                             <Grid
                                 ColumnDefinitions="*,*"
                                 ColumnSpacing="10">

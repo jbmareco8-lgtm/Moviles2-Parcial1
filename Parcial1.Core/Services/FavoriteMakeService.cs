@@ -51,4 +51,29 @@ public class FavoriteMakeService
 
         return result > 0;
     }
+
+    public async Task<FavoriteMake?> UpdateLocationAsync(
+        int makeId,
+        double latitude,
+        double longitude)
+    {
+        FavoriteMakeValidator.ValidateId(makeId);
+
+        FavoriteMakeValidator.ValidateLocation(
+            latitude, longitude);
+
+        var favorite = await _repository.GetByIdAsync(makeId);
+
+        if (favorite is null)
+        {
+            return null;
+        }
+
+        favorite.Latitude = latitude;
+        favorite.Longitude = longitude;
+
+        var result = await _repository.UpdateAsync(favorite);
+
+        return result > 0 ? favorite : null;
+    }
 }
