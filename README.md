@@ -1,54 +1,74 @@
-# parcial 1 - desarrollo de aplicaciones moviles II
+# parcial 2 integrador - desarrollo de aplicaciones moviles II
 
-este proyecto fue realizado para el primer parcial de la materia.
+este proyecto es una continuacion del que realice para el primer parcial de la materia.
 
-la aplicacion consume una API publica de vehiculos y permite cargar distintas marcas de autos. al seleccionar una marca se puede entrar a otra pantalla donde se muestran algunos datos de la marca y sus modelos disponibles.
+la aplicacion permite consultar marcas de autos y sus modelos mediante una API publica. para este segundo parcial agregue la posibilidad de guardar marcas favoritas y utilizar distintas funciones del dispositivo.
 
-usamos MVVM para separar la interfaz de la logica del programa.
+tambien hice algunos cambios en la organizacion del codigo e incorpore pruebas y herramientas que vimos durante la cursada.
 
 ## cosas que tiene la app
 
 - consumo de una API REST
-- carga de marcas de autos
+- carga y busqueda de marcas de autos
 - listado con CollectionView
-- busqueda de marcas
 - actualizacion de la lista deslizando hacia abajo
 - navegacion entre pantallas con Shell
-- paso de datos entre pantallas
 - carga de modelos segun la marca elegida
-- mensajes de carga y de error
-- manejo de errores de conexion y errores HTTP
+- guardado y eliminacion de favoritos
+- almacenamiento local con SQLite
+- captura de fotos desde la camara
+- guardado de la ubicacion
+- actualizacion de marcas al agitar el celular
+- vibracion para confirmar algunas acciones
+- manejo de errores y permisos
 - data binding y commands
 - dependency injection
 
 ## api
 
-para obtener los datos usamos la API publica vPIC de NHTSA.
+sigo utilizando la API publica vPIC de NHTSA para obtener las marcas y los modelos de los autos.
 
-con una consulta obtenemos las marcas de autos y con otra obtenemos los modelos de la marca seleccionada.
-
-las respuestas de la API llegan en formato JSON y se convierten a objetos de C# usando System.Text.Json.
+las consultas se realizan con HttpClient y las respuestas en formato JSON se convierten a objetos de C#.
 
 ## organizacion
 
-el proyecto esta separado principalmente en:
+para este parcial dividi la solucion en tres proyectos:
 
-- models
-- services
-- viewmodels
-- views
+- Parcial1: contiene las pantallas, los ViewModels, el consumo de la API y las funciones del dispositivo.
+- Parcial1.Core: contiene los modelos de favoritos, servicios, repositorios y validaciones.
+- Parcial1.Tests: contiene las pruebas unitarias y de integracion.
 
-tambien use una interfaz `IApiService` para manejar las consultas a la API.
-
-la mayor parte de la logica se encuentra en los ViewModels para evitar poner codigo importante dentro de las paginas.
+mantengo el patron MVVM del primer parcial y agregue Repository Pattern para separar el acceso a la base de datos de la logica del programa.
 
 ## funcionamiento
 
-al iniciar la aplicacion se puede tocar el boton para cargar las marcas.
+al entrar a la aplicacion se pueden cargar las marcas, buscarlas y seleccionar alguna para ver sus modelos.
 
-despues se pueden buscar marcas desde el buscador o actualizar la lista deslizando hacia abajo.
+desde el detalle de una marca se puede guardarla como favorita. en la nueva pantalla de favoritos se pueden consultar las marcas guardadas, eliminarlas, tomar una foto o guardar la ubicacion actual.
 
-al seleccionar una marca se abre una pantalla de detalle donde se muestra el nombre, el tipo de vehiculo, el id y una lista de modelos.
+tambien se puede actualizar el listado de marcas agitando el celular.
+
+los favoritos se guardan en SQLite por lo que no se pierden al cerrar la aplicacion.
+
+## cambios respecto al primer parcial
+
+- separe parte de la logica en un proyecto independiente
+- centralice el manejo de errores de la API
+- agregue validaciones en una clase aparte
+- reemplace Frame por Border
+- mejore la organizacion del codigo y de las dependencias
+
+## testing
+
+realice 50 casos de prueba utilizando xUnit, Moq y SQLite In-Memory.
+
+con estas pruebas pude comprobar las validaciones, el manejo de errores y las distintas operaciones sobre los favoritos sin depender de la interfaz de la app.
+
+## github actions
+
+configure un workflow que se ejecuta al subir cambios y realizar pull requests hacia el integrador.
+
+este se encarga de restaurar las dependencias, compilar y ejecutar los tests en Windows y Ubuntu. tambien utiliza cache de paquetes NuGet y genera los resultados de las pruebas y el APK de Android.
 
 ## tecnologias
 
@@ -59,8 +79,22 @@ al seleccionar una marca se abre una pantalla de detalle donde se muestra el nom
 - MVVM
 - HttpClient
 - System.Text.Json
+- SQLite
+- xUnit
+- Moq
 - Git y GitHub
+- GitHub Actions
+
+## como ejecutar
+
+clonar el repositorio, seleccionar la rama parcial2-integrador y abrir Parcial1.slnx desde Visual Studio con .NET MAUI instalado.
+
+la aplicacion se puede ejecutar en Windows o Android. las funciones de hardware necesitan un dispositivo compatible.
+
+para ejecutar los tests:
+
+dotnet test Parcial1.Tests/Parcial1.Tests.csproj
 
 ## integrante
 
-- Juan Bautista Mareco
+- Juan Bautista Mareco - 152413
